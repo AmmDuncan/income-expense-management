@@ -1,12 +1,15 @@
 import Local from '~~/server/models/local';
 
+/**
+ * Fetches a single local branch by id
+ */
 export default defineEventHandler(async (event) => {
   try {
     const id = event.context.params.id;
     const local = await Local.findById(id);
     return {
       status: 200,
-      message: 'User retreived successfully',
+      message: 'Local retreived successfully',
       data: {
         local
       }
@@ -14,7 +17,7 @@ export default defineEventHandler(async (event) => {
   } catch (e) {
     return {
       status: 400,
-      message: 'Something went horribly wrong',
+      message: e.message,
       data: null
     };
   }

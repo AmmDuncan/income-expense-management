@@ -1,11 +1,23 @@
 import UserServices from '~~/server/services/user.service';
 
 const { login } = UserServices;
+/**
+ * Logs a user in
+ */
 export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
-    return login(body);
+    const { status, message, data } = login(body);
+    return {
+      status,
+      message,
+      data
+    };
   } catch (e) {
-    return e.message;
+    return {
+      status: 400,
+      message: e.message,
+      data: null
+    };
   }
 });

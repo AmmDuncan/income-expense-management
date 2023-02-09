@@ -1,5 +1,8 @@
 import Transaction from '~~/server/models/transaction';
 
+/**
+ * Fetches all transactions
+ */
 export default defineEventHandler(async (event) => {
   try {
     const transactions = await Transaction.find();

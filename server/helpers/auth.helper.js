@@ -93,8 +93,8 @@ class AuthHelper {
    * @param {Object} defaultAdmin
    * @returns {Boolean} True if default admin
    */
-  static checkDefaultAdmin(defaultAdmin) {
-    return !!defaultAdmin;
+  static checkDefaultAdmin(userObj) {
+    return userObj.superAdmin
   }
 
   /**

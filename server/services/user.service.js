@@ -41,11 +41,12 @@ class UserServices {
 
   /**
    * Creates a new user
-   * @param {Object} body
+   * @param {Object} body - request body
    * @returns {Object} - response object
    */
-  static async signUp(body) {
-    try {
+  static async signUp(body, token) {
+    const userObj = verifyToken(token);
+    if (userObj.superAdmin) {
       const { password, ...rest } = body;
       const { salt, hash } = hashPassword(password);
       const user = await User.create({
@@ -53,19 +54,17 @@ class UserServices {
         hashedPassword: hash,
         ...rest
       });
-
       return {
         status: 201,
         message: 'User created successfully',
         data: user
       };
-    } catch (e) {
-      return {
-        status: 400,
-        message: e.message,
-        data: null
-      };
     }
+    return {
+      status: 403,
+      message: 'You do not have permissions',
+      data: null
+    };
   }
 
   /**
@@ -78,7 +77,7 @@ class UserServices {
     try {
       if (verifyToken(token)) {
         const { salt, hash } = hashPassword(body.password);
-        const userObj = jwtDecode(token);
+        const userObj = verifyToken(token);
         const user = await User.findOneAndUpdate(
           { username: userObj.username },
           {

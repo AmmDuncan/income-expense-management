@@ -1,5 +1,8 @@
 import Transaction from '~~/server/models/transaction';
 
+/**
+ * Deletes a transaction
+ */
 export default defineEventHandler(async (event) => {
   try {
     const id = event.context.params.id;

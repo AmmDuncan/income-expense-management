@@ -2,7 +2,7 @@ import { Schema, model } from 'mongoose';
 
 const transactionSchema = Schema({
   detials: { type: String },
-  amount: { type: Number },
+  amount: { type: Number, default: 0 },
   type: { type: String, enum: ['income, expense'] },
   local: { type: Schema.Types.ObjectId, ref: 'Local' },
   user: { type: Schema.Types.ObjectId, ref: 'User' },

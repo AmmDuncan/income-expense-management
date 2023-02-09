@@ -1,5 +1,8 @@
 import User from '~~/server/models/user';
 
+/**
+ * Gets all users on a local branch
+ */
 export default defineEventHandler(async (event) => {
   try {
     const id = event.context.params.id;
@@ -12,7 +15,7 @@ export default defineEventHandler(async (event) => {
   } catch (e) {
     return {
       status: 400,
-      message: 'Something went horribly wrong',
+      message: e.message,
       data: null
     };
   }
