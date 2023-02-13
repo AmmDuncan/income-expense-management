@@ -1,4 +1,3 @@
-import jwtDecode from 'jwt-decode';
 import AuthHelper from '../helpers/auth.helper';
 import User from '../models/user';
 
@@ -62,8 +61,29 @@ class UserServices {
     }
     return {
       status: 403,
-      message: 'You do not have permissions',
+      message: 'You do not have enough permissions',
       data: null
+    };
+  }
+
+  /**
+   * Creates a superuser
+   * @param {Object} body - request body
+   * @returns {Object} response
+   */
+  static async createSuperUser(body) {
+    const { password, ...rest } = body;
+    const { salt, hash } = hashPassword(password);
+    const user = await User.create({
+      salt,
+      hashedPassword: hash,
+      superAdmin: true,
+      ...rest
+    });
+    return {
+      status: 201,
+      message: 'Superuser created successfully',
+      data: user
     };
   }
 
@@ -74,30 +94,27 @@ class UserServices {
    * @returns {Object} response object
    */
   static async resetPassword(body, token) {
-    try {
-      if (verifyToken(token)) {
-        const { salt, hash } = hashPassword(body.password);
-        const userObj = verifyToken(token);
-        const user = await User.findOneAndUpdate(
-          { username: userObj.username },
-          {
-            salt,
-            hashedPassword: hash
-          }
-        );
-        return {
-          status: 201,
-          message: 'Password reset successfully',
-          data: user
-        };
-      }
-    } catch (e) {
+    if (verifyToken(token)) {
+      const { salt, hash } = hashPassword(body.password);
+      const userObj = verifyToken(token);
+      const user = await User.findOneAndUpdate(
+        { username: userObj.username },
+        {
+          salt,
+          hashedPassword: hash
+        }
+      );
       return {
-        status: 400,
-        message: e.message,
-        data: null
+        status: 201,
+        message: 'Password reset successfully',
+        data: user
       };
     }
+    return {
+      status: 403,
+      message: "You don't have enough permissions",
+      data: null
+    };
   }
 }
 
