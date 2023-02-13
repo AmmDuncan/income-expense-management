@@ -1,7 +1,9 @@
 import AuthHelper from '../helpers/auth.helper';
 import User from '../models/user';
+import GenServices from './generic.service';
 
 const { compareHash, addTokenToData, hashPassword, verifyToken } = AuthHelper;
+const { resolveAggregateQueryPagination } = GenServices;
 /**
  * @Class UserServices
  * @Brief contains all services for user
@@ -115,6 +117,37 @@ class UserServices {
       message: "You don't have enough permissions",
       data: null
     };
+  }
+
+  /**
+   * Fetches all users
+   * @param {Number} page - page number
+   * @returns {Promise | null}
+   */
+  static async fetchAllUsers(page) {
+    return User.aggregate([
+      {
+        $match: {}
+      },
+      ...resolveAggregateQueryPagination(page)
+    ]);
+  }
+
+  /**
+   * Search feature
+   * @param {String} keyword
+   * @param {Number} page - page number
+   * @returns {Promise | null}
+   */
+  static async searchAllUsers(keyword, page) {
+    return User.aggregate([
+      {
+        $match: {
+          username: { $regex: keyword, $options: 'i' }
+        }
+      },
+      ...resolveAggregateQueryPagination(page)
+    ]);
   }
 }
 
